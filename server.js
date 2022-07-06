@@ -7,7 +7,7 @@ require('dotenv').config()
 
 let db,
     dbConnectionStr = process.env.DB_STRING,
-    dbName = 'FlickFreak'
+    dbName = 'ff'
 
 MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
     .then(client => {
@@ -15,42 +15,35 @@ MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
         db = client.db(dbName)
 });
 
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.get('/',(req,res)=>{
     db.collection('movies').find().toArray()
     .then (data => {
-        res.render('index.ejs', {info: data})
+        res.send(data)
     })
     .catch(err => console.error(err))
 });
 
-app.post('/addMovie', (req, res) =>{
-    db.collection('movies').insertOne({movieName: req.body.movieName,
+app.post('/', (req, res) =>{
+    db.collection('movies').insertOne({name: req.body.name,
     watched: false,
-    watchedDate: '1999/01/01'})
+    watchCnt: 0})
     .then(result => {
         console.log('Movie added')
         res.redirect('/')
     })
     .catch(err => console.error(err))
-})
+});
 
-function getDate(){
-    let date = new Date()
-    date = date.toString()
-    return date.slice(0,15)
-}
-
-app.put('/addToWatched', (req, res) => {
-    db.collection('movies').updateOne({movieName: req.body.movieName, 
-        watched: req.body.watched},{
+app.put('/', (req, res) => {
+    db.collection('movies').updateOne({name: req.body.name, 
+        watched: req.body.watched,
+        watchCnt: req.body.watchCnt},{
         $set: {
             watched: true,
-            watchedDate: getDate()
+            watchCnt: req.body.watchCnt + 1
           }
     },{
         upsert: true
@@ -58,21 +51,20 @@ app.put('/addToWatched', (req, res) => {
     .then(result => {
         console.log('Watched movie')
         res.json('Movie Watched')
-        //res.redirect('/')
     })
     .catch(err => console.error(err))
 
 });
 
-app.delete('/deleteMovie', (req, res) => {
-    db.collection('movies').deleteOne({movieName: req.body.movieName})
+app.delete('/', (req, res) => {
+    db.collection('movies').deleteOne({name: req.body.name, 
+        watched: false})
     .then(result => {
         console.log('Unwatched Movie Deleted')
         res.json('Unwatched Movie Deleted')
     })
     .catch(err => console.error(err))
-
-})
+});
 
 app.listen(process.env.PORT || PORT, ()=>{
     console.log(`server running on port ${PORT}`)

@@ -61,6 +61,7 @@ app.delete('/', (req, res) => {
         watched: false})
     .then(result => {
         console.log('Unwatched Movie Deleted')
+        res.json('Movie Deleted')
     })
     .catch(err => console.error(err))
 });

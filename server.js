@@ -29,7 +29,8 @@ app.get('/',(req,res)=>{
 app.post('/', (req, res) =>{
     db.collection('movies').insertOne({name: req.body.name,
     watched: false,
-    watchCnt: 0})
+    watchCnt: 0,
+    dates: []})
     .then(result => {
         console.log('Movie added')
         res.redirect('/')
@@ -43,8 +44,11 @@ app.put('/', (req, res) => {
         watchCnt: req.body.watchCnt},{
         $set: {
             watched: true,
-            watchCnt: req.body.watchCnt + 1
-          }
+            watchCnt: req.body.watchCnt + 1,
+          },
+        $push: {
+            dates: new Date()
+        }
     },{
         upsert: true
     })

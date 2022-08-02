@@ -13,6 +13,8 @@ API created to communicate with MongoDB collection that stores a movie's name, i
 
 ## Optimizations
 
+8/1/2022: Added Date tracking of watched movies. Will help with future components that display dates watched. Need to rework movies into their own cards, which can help display detailed information logged. New component ideas: Top Movies watched in X year, X month. Track achievements such as "Friday Night Flick Freak" for total number of consecutive Fridays where a movie was watched.
+
 Need to build some additional Get requests to help handle some additional features down the road, such as top 5 most watched movies, and least watched movies. 
 
 ## Lessons Learned:
